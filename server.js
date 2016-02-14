@@ -1,5 +1,9 @@
+var MongoClient = require('mongodb').MongoClient;
 var express = require('express');
 var app = express();
+var _db;
+var _collection;
+
 
 // set the port of our application
 // process.env.PORT lets the port be set by Heroku
@@ -18,7 +22,25 @@ app.get('/', function(req, res) {
 	res.render('index');
 });
 
+app.get('/teste', function(req, res) {
+  _collection.find({}, function(err, docs) {
+    docs.each(function(err, doc) {
+      if(doc) {
+        res.write(JSON.stringify(doc) + "\n");
+      }
+      else {
+        res.end();
+      }
+    });
+  });
+});
+
 app.listen(port, function() {
-	console.log('Our app is running on http://localhost:' + port);
+     MongoClient.connect('mongodb://admin:zarman12@ds059205.mongolab.com:59205/ragdoll', function(err, db) {
+          if(err) throw err;
+	  _db = db;
+	  _collection = db.collection("batch_document_insert_collection_safe");
+	  console.log('Our app is running on http://localhost:' + port);
+     })
 });
 
